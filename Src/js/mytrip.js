@@ -1,40 +1,3 @@
-// **************************************************************************
-// google map api
-// **************************************************************************
-var map;
-var markers = [];
-var infoWindows = [];
-
-var API_KEY = 'AIzaSyDZQhR2ozyO8ezPJlxO6GOC9dM281nb_cQ';
-function showGoogleMap(){
-
-    // 서울시청
-    var location = {
-        lat : 37.56647, 
-        lng: 126.977963
-    };
-
-    var mapOption = {
-        zoom: 16,
-        center: {lat: location.lat, lng: location.lng}
-        // disableDefaultUI : false, 
-        // disableDoubleClickZoom : false, 
-        // draggable : true, 
-        // keyboardShortcuts : true, 
-        // maxZoom : 18, 
-        // minZoom : 1 
-    };
-
-    map = new google.maps.Map(document.getElementById('map_canvas'), mapOption);
-}
-
-google.maps.event.addDomListener(window, 'load', showGoogleMap);
-
-// google.maps.event.addDomListener(window, 'resize', function() { 
-//     var center = map.getCenter();
-//     google.maps.event.trigger(map, 'resize');
-//     map.setCenter(center); 
-// });
 
 var myTrip = {};
 myTrip.webdb = {};
@@ -147,25 +110,10 @@ function loadTripItems(tx, rs){
     if(rs.rows.length > 0){
         var rowOutput = '';
         var tripItems = document.getElementById('tripItems');
-        var pos;        // google.maps.LatLng
-        // reset markers
-        for(var i = 0; i < markers.length; i++){
-            markers[i].setMap(null);
-        }
-
-        for(var i = 0; i < infoWindows.length; i++){
-            infoWindows[i].setMap(null);
-        }
-
-        markers.splice(0, markers.length);
-        infoWindows.splice(0, infoWindows.length);
-
+        
         for( var i = 0; i < rs.rows.length; i++){
             var row = rs.rows.item(i);
-
             rowOutput += renderTrip(row);
-
-            pos = new google.maps.LatLng(row.Lat, row.Lng);
         }
 
         tripItems.innerHTML = rowOutput;
@@ -178,16 +126,10 @@ function loadTripItems(tx, rs){
         });
 
         myTrip.webdb.getAllTripCount();
-
-        // set last location
-        map.setCenter(pos);
-        // if(pos){
-        //     setTimeout(function(){
-        //         map.setCenter(pos);
-        //     }, 200);
-        // }
     }
 }
+
+
 
 function renderTrip(row){
     var id = row.Id;
@@ -196,40 +138,15 @@ function renderTrip(row){
     var title = row.Title;
     var comment = row.Comment;
     
-    var pos = new google.maps.LatLng(lat, lng);
-
     comment =comment.replace(/(?:\r\n|\r|\n)/g, '<br />');
 
-    var test = 'Lat: ' + lat;
-    test += '<br />Lng: ' + lng;
-    test += '<br />Title: ' + title;
-    test += '<br />Comment: ' + comment;
+    var text = 'Lat: ' + lat;
+    text += '<br />Lng: ' + lng;
+    text += '<br />Title: ' + title;
+    text += '<br />Comment: ' + comment;
 
-    if(comment && comment.length > 0){
-        // set Info window
-        var infowindow = new google.maps.InfoWindow({
-            map: map,
-            position: pos,
-            content: comment
-        });
 
-        infoWindows.push(infowindow);
-    }
-    // set maker
-    var marker = new google.maps.Marker({
-        position: pos,
-        map: map,
-        title: title,
-        animation: google.maps.Animation.BOUNCE // DROP 
-    });
-    
-    markers.push(marker);
-
-    setTimeout(function(){
-        marker.setAnimation(null);
-    }, 3000);    
-
-    return '<li class="list-group-item" data-tripid="' + id + '">' + test +
+    return '<li class="list-group-item" data-tripid="' + id + '">' + text +
            '<span class="badge badge-danger">DEL</span></li>';
 }
 
@@ -238,7 +155,13 @@ function init(){
     try{
         myTrip.webdb.open();
         myTrip.webdb.createTable();
-        myTrip.webdb.getAllTrip(loadTripItems);
+        
+        if(window.location.pathname.toUpperCase().indexOf('MAP') >= 0){
+            myTrip.webdb.getAllTrip(loadMarkerItems);
+        }else if(window.location.pathname.toUpperCase().indexOf('TRIP') >= 0) {
+            myTrip.webdb.getAllTrip(loadTripItems);
+        }
+        
     }
     catch(e){
 
@@ -260,7 +183,8 @@ function init(){
             });
 
             $('#btnAdd').prop('disabled', true);
-            $('#todo').prop('disabled', true);
+            $('#title').prop('disabled', true);
+            $('#comment').prop('disabled', true);
         }
     }
 }
@@ -300,25 +224,18 @@ function showAlertMessage(message){
     });    
 }
 
-function hideAllTabs(){
-    $('.container').each(function(index, item){ 
-        var id_check = '';
-        id_check = $(item).attr('id');
-        
-        if(id_check) { 
-            $(item).hide(); 
-            $(item).addClass('hide');
-        } 
-    });
-}
-
-function hideTabsExceptMe(selector){
-    hideAllTabs();
-    $(selector).removeClass('hide');
-    $(selector).show();
-}
-
 $(document).ready(function(){
+
+    if(window.showGoogleMap !== window.undefined){
+        showGoogleMap();
+    }
+
+    $('a').click(function(event){
+        var href = $(this).attr('href');
+        if(href && href === '#'){
+            event.preventDefault();
+        }
+    });
 
     $('#btnAdd').click(function(){
         // Title is required.
@@ -336,30 +253,6 @@ $(document).ready(function(){
 
     });
 
-    $('#navbar ul.nav li a').click(function(event){
-        event.preventDefault();
-        // alert($(this).text());
-
-        //active
-        $('#navbar ul.nav li').each(function(index, item){
-            $(item).removeClass('active');   
-        });
-        
-        hideAllTabs();
-        
-        $(this).parents(1).addClass('active');
-        var name = $(this).attr('href');
-        $(name).removeClass('hide');
-        $(name).show();
-
-        if($('#navbar').hasClass('in')){
-            $('#navbar').removeClass('in');
-        }
-
-    });        
-    
-    //showGoogleMap();
-    hideTabsExceptMe('#home');
     init();    
 });
 

@@ -8,20 +8,20 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="Save my trip.">
     <meta name="author" content="Pon Cheol Ku (@bbonkr)">
-    <link rel="icon" href="../../favicon.ico">
+    <link rel="icon" href="../favicon.ico">
 
     <title>HTML5 Web Sql Database</title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="./css/mytrip.css">
-    <link rel="stylesheet" href="./css/sticky-footer-navbar.css">
+    <link rel="stylesheet" href="../css/mytrip.css">
+    <link rel="stylesheet" href="../css/sticky-footer-navbar.css">
 
     <!-- Optional theme -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
     <script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="./js/mytrip.js"></script>
+    <script src="../js/mytrip.js"></script>
 </head>
 <body>
 
@@ -35,14 +35,14 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="./">My trip</a>
+          <a class="navbar-brand" href="../">My trip</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="./map">Map</a></li>
-            <li><a href="./trip">Trip</a></li>
-            <li><a href="./contact">Contact</a></li>
+            <li><a href="../">Home</a></li>
+            <li><a href="../map/">Map</a></li>
+            <li><a href="../trip/">Trip</a></li>
+            <li class="active"><a href="#">Contact</a></li>
             <!--
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
@@ -62,34 +62,24 @@
       </div>
     </nav>
 
-    <div class="container" id="home">
+    <div class="container" id="contact">
         <div class="page-header">
-            <h1>My trip <small>Remember my trip.</small></h1>
-            <h3><span class="label label label-danger" id="messageLabel"></span></h3>
-        </div>
-
-        <div class="row">
-            <div class="alert alert-warning hide showmessage" role="alert">
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="text-center">
-                <button id="btnAdd" class="btn btn-primary btn-circle">Remember</button>    
-            </div>
-            
+            <h1>Contact</h1>
         </div>
         <div class="row">
-            <div class="form-group">
-                <label>Title:</label>
-                <input type="text" id="title" class="form-control" autofocus />
+            <div class="col-sm-4 col-md-4 col-lg-4 card">
+                <h3>Pon Cheol, Ku</h3>
+                <p class="text-center">
+                    <img src="http://www.gravatar.com/avatar/7305c166cb25a4f864c146b5e0c62333?s=200" alt="Pon Cheol, Ku" class="img-responsive img-circle" />
+                </p>
+                <ul class="list-unstyled">
+                    <li>e-mail: <a href="mailto:bbon72@idino.co.kr">bbon72@idino.co.kr</a></li>
+                    <li>Twitter: <a href="https://twitter.com/bbonkr">@bbonkr</a></li>
+                    <li>Facebook: <a href="https://facebook.com/bbonkr">Link</a></li>
+                    <li>Github: <a href="https://github.com/bbonkr">@bbonkr</a></li>
+                </ul>
             </div>
-            <div class="form-group">
-                <label>Comment:</label>
-                <!-- <input type="text" id="todo" class="form-control" /> -->
-                <textarea id="comment" class="form-control" rows="2"></textarea>
-            </div>
-        </div>
+        </div>        
     </div>
 
     <footer class="footer">
