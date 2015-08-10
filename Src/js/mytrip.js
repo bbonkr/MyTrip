@@ -6,7 +6,7 @@ var markers = [];
 var infoWindows = [];
 
 var API_KEY = 'AIzaSyDZQhR2ozyO8ezPJlxO6GOC9dM281nb_cQ';
-function showGoogleMap(){
+function initialize(){
 
     // 서울시청
     var location = {
@@ -14,9 +14,11 @@ function showGoogleMap(){
         lng: 126.977963
     };
 
+    var seoulCityHall = new google.maps.LatLng(location.lat,  location.lng);
+
     var mapOption = {
-        zoom: 16,
-        center: {lat: location.lat, lng: location.lng}
+        center:  seoulCityHall,
+        zoom: 16        
         // disableDefaultUI : false, 
         // disableDoubleClickZoom : false, 
         // draggable : true, 
@@ -28,7 +30,7 @@ function showGoogleMap(){
     map = new google.maps.Map(document.getElementById('map_canvas'), mapOption);
 }
 
-google.maps.event.addDomListener(window, 'load', showGoogleMap);
+// google.maps.event.addDomListener(window, 'load', initialize);
 
 // google.maps.event.addDomListener(window, 'resize', function() { 
 //     var center = map.getCenter();
@@ -107,7 +109,7 @@ myTrip.webdb.addTrip = function(location, title, comment, url) {
 
 myTrip.webdb.getAllTrip = function(renderFunc) {
     var db = myTrip.webdb.db;
-    var sql_select = 'SELECT Id, Lat, Lng, Title, Comment, Url, Visited FROM myTrip';
+    var sql_select = 'SELECT Id, Lat, Lng, Title, Comment, Url, Visited FROM myTrip order by Visited DESC';
     db.transaction(function(tx){
         tx.executeSql(sql_select, 
             [], 
@@ -165,8 +167,12 @@ function loadTripItems(tx, rs){
 
             rowOutput += renderTrip(row);
 
-            pos = new google.maps.LatLng(row.Lat, row.Lng);
+            
         }
+
+        pos = new google.maps.LatLng(
+            rs.rows[rs.rows.length - 1].Lat, 
+            rs.rows[rs.rows.length - 1].Lng);
 
         tripItems.innerHTML = rowOutput;
 
@@ -180,12 +186,8 @@ function loadTripItems(tx, rs){
         myTrip.webdb.getAllTripCount();
 
         // set last location
+        
         map.setCenter(pos);
-        // if(pos){
-        //     setTimeout(function(){
-        //         map.setCenter(pos);
-        //     }, 200);
-        // }
     }
 }
 
@@ -205,24 +207,32 @@ function renderTrip(row){
     test += '<br />Title: ' + title;
     test += '<br />Comment: ' + comment;
 
-    if(comment && comment.length > 0){
-        // set Info window
-        var infowindow = new google.maps.InfoWindow({
-            map: map,
-            position: pos,
-            content: comment
-        });
-
-        infoWindows.push(infowindow);
-    }
+    
     // set maker
     var marker = new google.maps.Marker({
         position: pos,
         map: map,
         title: title,
-        animation: google.maps.Animation.BOUNCE // DROP 
+        animation: google.maps.Animation.BOUNCE, // DROP 
+        attribution: {
+            source: title
+            //webUrl: 'https://developers.google.com/maps/'
+        }
     });
     
+    if(comment && comment.length > 0){
+        // set Info window
+        var infowindow = new google.maps.InfoWindow({
+            content: comment
+        });
+
+        infoWindows.push(infowindow);
+
+        marker.addListener('click', function(){
+            infowindow.open(map, marker);
+        });
+    }
+  
     markers.push(marker);
 
     setTimeout(function(){
@@ -320,6 +330,9 @@ function hideTabsExceptMe(selector){
 
 $(document).ready(function(){
 
+    // initialize web sql database
+    init();
+
     $('#btnAdd').click(function(){
         // Title is required.
         // var title = $('#title').val();
@@ -336,9 +349,8 @@ $(document).ready(function(){
 
     });
 
-    $('#navbar ul.nav li a').click(function(event){
+    $('#navbar ul.nav li a, .navbar a.navbar-brand').click(function(event){
         event.preventDefault();
-        // alert($(this).text());
 
         //active
         $('#navbar ul.nav li').each(function(index, item){
@@ -358,9 +370,7 @@ $(document).ready(function(){
 
     });        
     
-    //showGoogleMap();
     hideTabsExceptMe('#home');
-    init();    
 });
 
 
